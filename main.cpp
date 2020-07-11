@@ -4,6 +4,7 @@
 
 struct Startup{
     bool swapEndianess = false;
+    uint32_t base = 10;
 } startup;
 
 void help(std::string progname){
@@ -19,6 +20,9 @@ std::string parseArgs(int argc, char** argv){
             filename = argv[i];
         else if (std::string(argv[i]) == "--swapendianess")
             startup.swapEndianess = true;
+        else if (std::string(argv[i]) == "--base" && i < argc-1)
+            startup.base = std::stoi(argv[i+1]);
+
     }
     if (filename == "") exit(-1);
     return filename;
@@ -27,6 +31,8 @@ std::string parseArgs(int argc, char** argv){
 int main(int argc, char** argv){
     std::string filename = parseArgs(argc, argv);
     Converter conv(filename);
+    conv.setBase(startup.base);
+    conv.convertToBinary();
     if (startup.swapEndianess)
         conv.swapEndianess();
     conv.write();
