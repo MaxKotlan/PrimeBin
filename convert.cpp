@@ -59,7 +59,7 @@ void Converter::convertToBinary(){
             result *= base;
             result += (uint32_t)(buffer[i]-'a'+10);
             pushnumber = true;
-        } else if (buffer[i] >= 'A' && buffer[i] <= 'Z' && buffer[i] - 'a'+10 < base){
+        } else if (buffer[i] >= 'A' && buffer[i] <= 'Z' && buffer[i] - 'A'+10 < base){
             result *= base;
             result += (uint32_t)(buffer[i]-'A'+10);
             pushnumber = true;
