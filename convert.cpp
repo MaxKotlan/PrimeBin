@@ -51,7 +51,7 @@ void Converter::convertToBinary(){
     uint32_t result = 0;
     bool pushnumber = false;
     for (uint64_t i = 0; i < buffer.size(); i++){
-        if(buffer[i] >= '0' && buffer[i] <= '9'){
+        if(buffer[i] >= '0' && buffer[i] <= '9' && buffer[i] - '0' < base){
             result *= base;
             result += (uint32_t)(buffer[i]-'0');
             pushnumber = true;
@@ -68,6 +68,11 @@ void Converter::convertToBinary(){
             result = 0;
             pushnumber = false;
         }
+    }
+    if (pushnumber){
+        outputdata.push_back(result);
+        result = 0;
+        pushnumber = false;
     }
     std::cout << "Done!" << std::endl;    
 }

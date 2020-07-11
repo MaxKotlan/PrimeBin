@@ -20,8 +20,13 @@ std::string parseArgs(int argc, char** argv){
             filename = argv[i];
         else if (std::string(argv[i]) == "--swapendianess")
             startup.swapEndianess = true;
-        else if (std::string(argv[i]) == "--base" && i < argc-1)
+        else if (std::string(argv[i]) == "--base" && i < argc-1){
             startup.base = std::stoi(argv[i+1]);
+            if (startup.base < 2 || startup.base > 36) {
+                std::cout << "Base must be equal or between  2 and 36" << std::endl;
+                exit(-1);
+            }
+        }
 
     }
     if (filename == "") exit(-1);
