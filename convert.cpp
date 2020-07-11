@@ -49,14 +49,24 @@ void Converter::write(){
 void Converter::convertToBinary(){
     std::cout << "Converting... " << std::flush; 
     uint32_t result = 0;
-    bool previous = false;
+    bool pushnumber = false;
     for (uint64_t i = 0; i < buffer.size(); i++){
         if(buffer[i] >= '0' && buffer[i] <= '9'){
             result *= base;
             result += (uint32_t)(buffer[i]-'0');
-        } else {
+            pushnumber = true;
+        } else if (buffer[i] >= 'a' && buffer[i] <= 'z' && buffer[i] - 'a'+10 < base){
+            result *= base;
+            result += (uint32_t)(buffer[i]-'a'+10);
+            pushnumber = true;
+        } else if (buffer[i] >= 'A' && buffer[i] <= 'Z' && buffer[i] - 'a'+10 < base){
+            result *= base;
+            result += (uint32_t)(buffer[i]-'A'+10);
+            pushnumber = true;
+        } else if (pushnumber){
             outputdata.push_back(result);
             result = 0;
+            pushnumber = false;
         }
     }
     std::cout << "Done!" << std::endl;    
