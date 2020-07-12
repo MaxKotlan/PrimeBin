@@ -20,15 +20,15 @@ struct Startup{
 
 void help(std::string progname){
     std::cout << "Usage: " << progname << " [filename.txt]" << std::endl;
-    std::cout << "\t--base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
-    std::cout << "\t--primitive [type]\t select primitive of output memory map." << std::endl;
+    std::cout << "\t-b, --base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
+    std::cout << "\t-p, --primitive [type]\t   select primitive of output memory map. If number is too large standard overflow will occur." << std::endl;
     std::cout << "\t\tuint8\t(1 bytes)" << std::endl;
     std::cout << "\t\tuint16\t(2 bytes)" << std::endl;
     std::cout << "\t\tuint32\t(4 bytes)" << std::endl;
     std::cout << "\t\tuint64\t(8 bytes)" << std::endl;
     std::cout << "\t\tfloat32\t(4 bytes)" << std::endl;
     std::cout << "\t\tfloat64\t(8 bytes)" << std::endl;
-    std::cout << "\t--swapendianess\t   saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
+    std::cout << "\t-e, --swapendianess\t   saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
     exit(-1);
 }
 
