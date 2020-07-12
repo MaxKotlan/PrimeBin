@@ -43,20 +43,4 @@ int main(int argc, char** argv){
     if (startup.swapEndianess)
         conv.swapEndianess();
     conv.write();
-
-/*
-    //test reading the file
-    FILE* test = fopen("primes.bin", "rb+");
-    fseek(test, 0L, SEEK_END);
-    uint64_t size = ftell(test);
-    fseek(test, 0L, SEEK_SET);
-    std::vector<uint32_t> rbuf(16);
-    fread(rbuf.data(), 8, sizeof(uint32_t), test);
-    fclose(test);
-    for (uint64_t i = 0; i < rbuf.size(); i++){
-        std::cout << rbuf[i] << std::endl;
-        if (i > 10) break;
-    }*/
-
-
 }
