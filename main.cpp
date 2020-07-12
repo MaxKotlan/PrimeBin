@@ -9,6 +9,8 @@ struct Startup{
 
 void help(std::string progname){
     std::cout << "Usage: " << progname << " [filename.txt]" << std::endl;
+    std::cout << "\t--base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
+    std::cout << "\t--swapendianess\t   saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
     exit(-1);
 }
 
