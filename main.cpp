@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "convert.h"
+#include "file.h"
 
 struct Startup{
     bool swapEndianess = false;
@@ -37,10 +38,13 @@ std::string parseArgs(int argc, char** argv){
 
 int main(int argc, char** argv){
     std::string filename = parseArgs(argc, argv);
-    Converter<float> conv(filename);
+    std::vector<uint8_t> inputbuffer = ReadFile(filename);
+    Converter<uint8_t> conv(&inputbuffer);
     conv.setBase(startup.base);
     conv.convertToBinary();
     if (startup.swapEndianess)
         conv.swapEndianess();
-    conv.write();
+    
+    std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
+    WriteFile(outputfilename, conv.outputdata);
 }
