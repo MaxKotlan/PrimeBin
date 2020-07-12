@@ -7,7 +7,9 @@ typedef enum Primitive{
     uint8,
     uint16,
     uint32,
-    uint64
+    uint64,
+    float32,
+    float64
 } Primitive;
 
 struct Startup{
@@ -19,6 +21,13 @@ struct Startup{
 void help(std::string progname){
     std::cout << "Usage: " << progname << " [filename.txt]" << std::endl;
     std::cout << "\t--base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
+    std::cout << "\t--primitive [type]\t select primitive of output memory map." << std::endl;
+    std::cout << "\t\tuint8\t(1 bytes)" << std::endl;
+    std::cout << "\t\tuint16\t(2 bytes)" << std::endl;
+    std::cout << "\t\tuint32\t(4 bytes)" << std::endl;
+    std::cout << "\t\tuint64\t(8 bytes)" << std::endl;
+    std::cout << "\t\tfloat32\t(4 bytes)" << std::endl;
+    std::cout << "\t\tfloat64\t(8 bytes)" << std::endl;
     std::cout << "\t--swapendianess\t   saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
     exit(-1);
 }
@@ -38,7 +47,7 @@ std::string parseArgs(int argc, char** argv){
                 exit(-1);
             }
         }
-        else if (std::string(argv[i]) == "--primitive"){
+        else if (std::string(argv[i]) == "--primitive" && i < argc-1){
 
         }
 
@@ -72,6 +81,11 @@ int main(int argc, char** argv){
             TransformAndWrite<uint32_t>(filename, &inputbuffer); break;
         case uint64: 
             TransformAndWrite<uint64_t>(filename, &inputbuffer); break;
+        case float32: 
+            TransformAndWrite<float>(filename, &inputbuffer); break;
+        case float64: 
+            TransformAndWrite<double>(filename, &inputbuffer); break;
+
     }
 
 }
