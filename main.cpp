@@ -3,9 +3,17 @@
 #include "convert.h"
 #include "file.h"
 
+typedef enum Primitive{
+    uint8,
+    uint16,
+    uint32,
+    uint64
+} Primitive;
+
 struct Startup{
     bool swapEndianess = false;
     uint32_t base = 10;
+    Primitive writeprim = uint32;
 } startup;
 
 void help(std::string progname){
@@ -30,21 +38,40 @@ std::string parseArgs(int argc, char** argv){
                 exit(-1);
             }
         }
+        else if (std::string(argv[i]) == "--primitive"){
+
+        }
 
     }
     if (filename == "") exit(-1);
     return filename;
 }
 
-int main(int argc, char** argv){
-    std::string filename = parseArgs(argc, argv);
-    std::vector<uint8_t> inputbuffer = ReadFile(filename);
-    Converter<uint8_t> conv(&inputbuffer);
+template <class T>
+void TransformAndWrite(std::string filename, std::vector<uint8_t>* inputbuffer){
+    Converter<T> conv(inputbuffer);
     conv.setBase(startup.base);
     conv.convertToBinary();
     if (startup.swapEndianess)
         conv.swapEndianess();
-    
+        
     std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
     WriteFile(outputfilename, conv.outputdata);
+}
+
+int main(int argc, char** argv){
+    std::string filename = parseArgs(argc, argv);
+    std::vector<uint8_t> inputbuffer = ReadFile(filename);
+    
+    switch (startup.writeprim){
+        case uint8: 
+            TransformAndWrite<uint8_t>(filename, &inputbuffer); break;
+        case uint16: 
+            TransformAndWrite<uint16_t>(filename, &inputbuffer); break;
+        case uint32: 
+            TransformAndWrite<uint32_t>(filename, &inputbuffer); break;
+        case uint64: 
+            TransformAndWrite<uint64_t>(filename, &inputbuffer); break;
+    }
+
 }
