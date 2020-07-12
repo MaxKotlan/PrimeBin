@@ -1,2 +1,2 @@
 all:
-	g++ -o primebin main.cpp convert.cpp
+	g++ -o primebin main.cpp
