@@ -48,7 +48,12 @@ std::string parseArgs(int argc, char** argv){
             }
         }
         else if (std::string(argv[i]) == "--primitive" && i < argc-1){
-
+            if (std::string(argv[i+1]) == "uint8")  startup.writeprim = uint8;
+            if (std::string(argv[i+1]) == "uint16") startup.writeprim = uint16;
+            if (std::string(argv[i+1]) == "uint32") startup.writeprim = uint32;
+            if (std::string(argv[i+1]) == "uint64") startup.writeprim = uint64;
+            if (std::string(argv[i+1]) == "float32") startup.writeprim = float32;
+            if (std::string(argv[i+1]) == "float64") startup.writeprim = float64;
         }
 
     }
