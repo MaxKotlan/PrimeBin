@@ -38,16 +38,16 @@ std::string parseArgs(int argc, char** argv){
     for (int i = 0; i < argc; i++){
         if (std::string(argv[i]).find("--") == std::string::npos)
             filename = argv[i];
-        else if (std::string(argv[i]) == "--swapendianess")
+        else if (std::string(argv[i]) == "--swapendianess" || std::string(argv[i]) == "-e")
             startup.swapEndianess = true;
-        else if (std::string(argv[i]) == "--base" && i < argc-1){
+        else if ((std::string(argv[i]) == "--base" || std::string(argv[i]) == "-b") && i < argc-1){
             startup.base = std::stoi(argv[i+1]);
             if (startup.base < 2 || startup.base > 36) {
                 std::cout << "Base must be equal or between  2 and 36" << std::endl;
                 exit(-1);
             }
         }
-        else if (std::string(argv[i]) == "--primitive" && i < argc-1){
+        else if ((std::string(argv[i]) == "--primitive" || std::string(argv[i]) == "-p") && i < argc-1){
             if (std::string(argv[i+1]) == "uint8")  startup.writeprim = uint8;
             if (std::string(argv[i+1]) == "uint16") startup.writeprim = uint16;
             if (std::string(argv[i+1]) == "uint32") startup.writeprim = uint32;
