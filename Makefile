@@ -1,2 +1,2 @@
 all:
-	g++ -o primebin main.cpp
+	clang++ -o primebin main.cpp

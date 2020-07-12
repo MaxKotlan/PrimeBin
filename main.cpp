@@ -37,7 +37,7 @@ std::string parseArgs(int argc, char** argv){
 
 int main(int argc, char** argv){
     std::string filename = parseArgs(argc, argv);
-    Converter conv(filename);
+    Converter<float> conv(filename);
     conv.setBase(startup.base);
     conv.convertToBinary();
     if (startup.swapEndianess)
