@@ -34,8 +34,8 @@ void Converter<T>::convertToBinary(){
     std::cout << "Converting... " << std::flush; 
     T result = 0;
     bool pushnumber = false;
-    for (uint64_t i = 0; i < inputdata->size(); i++){
-        uint8_t digit = *(inputdata->data()+i);
+    bool calculateDecimal = false;
+    for (uint8_t digit : *inputdata){
         if(digit >= '0' && digit <= '9' && digit - '0' < base){
             result *= base;
             result += (T)(digit-'0');
