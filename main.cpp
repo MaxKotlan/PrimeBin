@@ -14,6 +14,7 @@ typedef enum Primitive{
 } Primitive;
 
 struct Startup{
+    bool ignoreSigns   = false;
     bool swapEndianess = false;
     uint32_t base = 10;
     Primitive writeprim = uint32;
@@ -23,6 +24,7 @@ void help(std::string progname){
     std::cout << "Usage: " << progname << " [filename.txt]" << std::endl;
     std::cout << "\t-h, --help\t           shows this prompt" << std::endl;
     std::cout << "\t-b, --base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
+    std::cout << "\t-u, --unsigned\t           treat all numbers as unsigned integers even if a number sign is present before the number." << std::endl;
     std::cout << "\t-p, --primitive [type]\t   select primitive of output memory map. If number is too large standard overflow will occur." << std::endl;
     std::cout << "\t\tuint8\t(1 bytes)" << std::endl;
     std::cout << "\t\tuint16\t(2 bytes)" << std::endl;
@@ -42,6 +44,8 @@ std::string parseArgs(int argc, char** argv){
             filename = argv[i];
         else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h")
             help(argv[0]);
+        else if (std::string(argv[i]) == "--unsigned" || std::string(argv[i]) == "-u")
+            startup.ignoreSigns = true;
         else if (std::string(argv[i]) == "--swapendianess" || std::string(argv[i]) == "-e")
             startup.swapEndianess = true;
         else if ((std::string(argv[i]) == "--base" || std::string(argv[i]) == "-b") && i < argc-1){
@@ -68,6 +72,7 @@ std::string parseArgs(int argc, char** argv){
 template <class T>
 void TransformAndWrite(std::string filename, std::vector<uint8_t>* inputbuffer){
     Converter<T> conv(inputbuffer);
+    conv.setIgnoreSigns(startup.ignoreSigns);
     conv.setBase(startup.base);
     conv.convertToBinary();
     if (startup.swapEndianess)

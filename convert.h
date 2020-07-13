@@ -11,6 +11,7 @@ class Converter{
     public:
         Converter(std::vector<uint8_t>* buffer);
         void swapEndianess();
+        void setIgnoreSigns(bool ignigns) { ignoresigns = ignigns; };
         void setBase(uint32_t nbase) { base = nbase; };
         void convertToBinary();
         std::vector<T> outputdata;
@@ -18,6 +19,7 @@ class Converter{
     private:
         std::vector<uint8_t>* inputdata;
         uint32_t base;
+        bool ignoresigns;
 };
 
 template <class T>
@@ -39,7 +41,7 @@ void Converter<T>::convertToBinary(){
     bool calculateDecimal = false;
     char sign = 1;
     for (uint8_t digit : *inputdata){
-        if (digit == '-'){
+        if (digit == '-' && !ignoresigns){
             sign = -1;
         } else if(AlphaNumeric::isNumeric(digit)){
             result *= base;
