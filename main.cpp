@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "analyze.h"
 #include "convert.h"
 #include "file.h"
 
@@ -80,6 +81,8 @@ int main(int argc, char** argv){
     std::string filename = parseArgs(argc, argv);
     std::vector<uint8_t> inputbuffer = ReadFile(filename);
     
+    //Analyzer analyze(&inputbuffer);
+
     switch (startup.writeprim){
         case uint8: 
             TransformAndWrite<uint8_t>(filename, &inputbuffer); break;

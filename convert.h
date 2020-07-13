@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <arpa/inet.h>
+#include "digit.h"
+#include "event.h"
 
 template <class T>
 class Converter{
@@ -23,28 +25,28 @@ Converter<T>::Converter(std::vector<uint8_t>* bufferaddress) : inputdata(buffera
 
 template <class T>
 void Converter<T>::swapEndianess() {
-    std::cout << "Swapping Endieness... " << std::flush; 
+    Event event("Swapping Endieness");
     for (T &primenumber : outputdata)
         primenumber = htonl(primenumber);
-    std::cout << "Done!" << std::endl;
+    event.stop();
 }
 
 template <class T>
 void Converter<T>::convertToBinary(){
-    std::cout << "Converting... " << std::flush; 
+    Event event("Converting");
     T result = 0;
     bool pushnumber = false;
     bool calculateDecimal = false;
     for (uint8_t digit : *inputdata){
-        if(digit >= '0' && digit <= '9' && digit - '0' < base){
+        if(AlphaNumeric::isNumeric(digit)){
             result *= base;
             result += (T)(digit-'0');
             pushnumber = true;
-        } else if (digit >= 'a' && digit <= 'z' && digit - 'a'+10 < base){
+        } else if (AlphaNumeric::isLowerAlphabetic(digit) && digit - 'a'+10 < base){
             result *= base;
             result += (T)(digit-'a'+10);
             pushnumber = true;
-        } else if (digit >= 'A' && digit <= 'Z' && digit - 'A'+10 < base){
+        } else if (AlphaNumeric::isUpperAlphabetic(digit) && digit - 'A'+10 < base){
             result *= base;
             result += (T)(digit-'A'+10);
             pushnumber = true;
@@ -59,5 +61,5 @@ void Converter<T>::convertToBinary(){
         result = 0;
         pushnumber = false;
     }
-    std::cout << "Done!" << std::endl;    
+    event.stop();
 }
