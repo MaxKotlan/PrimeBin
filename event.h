@@ -31,5 +31,5 @@ void Event::start(std::string message){
 
 void Event::stop(){
     _clock_stop = std::chrono::high_resolution_clock::now();
-    std::cout << "Done! " << std::chrono::duration_cast<std::chrono::nanoseconds>(_clock_stop - _clock_start).count() << " milliseconds" << std::endl; 
+    std::cout << "Done! " << std::chrono::duration_cast<std::chrono::milliseconds>(_clock_stop - _clock_start).count() << " milliseconds" << std::endl; 
 }

@@ -81,7 +81,7 @@ int main(int argc, char** argv){
     std::string filename = parseArgs(argc, argv);
     std::vector<uint8_t> inputbuffer = ReadFile(filename);
     
-    Analyzer analyze(&inputbuffer);
+    //Analyzer analyze(&inputbuffer);
 
     switch (startup.writeprim){
         case uint8: 
