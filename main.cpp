@@ -20,7 +20,7 @@ struct Startup{
 
 void help(std::string progname){
     std::cout << "Usage: " << progname << " [filename.txt]" << std::endl;
-    std::cout << "\t-h, --help\t   shows this prompt" << std::endl;
+    std::cout << "\t-h, --help\t           shows this prompt" << std::endl;
     std::cout << "\t-b, --base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
     std::cout << "\t-p, --primitive [type]\t   select primitive of output memory map. If number is too large standard overflow will occur." << std::endl;
     std::cout << "\t\tuint8\t(1 bytes)" << std::endl;
