@@ -4,7 +4,8 @@
 #include <fstream>
 
 std::vector<uint8_t> ReadFile(std::string filename){
-    std::cout << "Reading " << filename << " Into Memory... " << std::flush; 
+    Event event("Reading " + filename + " Into Memory");
+    //std::cout << "Reading " << filename << " Into Memory... " << std::flush; 
     FILE* input = fopen(filename.c_str(), "rb+");
     if (!input){
         std::cout << std::endl << "Error opening " << filename << ". Exiting..." << std::endl;
@@ -16,13 +17,13 @@ std::vector<uint8_t> ReadFile(std::string filename){
     std::vector<uint8_t> buffer(size);
     fread(buffer.data(), buffer.size(), 1, input);
     fclose(input);
-    std::cout << "Done!" << std::endl;
+    event.stop();
     return std::move(buffer);
 }
 
 template <class T>
 void WriteFile(std::string filename, std::vector<T> &outputdata){
-    std::cout << "Writing to " << filename << "... " << std::flush; 
+    Event event("Writing to " + filename);
     FILE* output = fopen(filename.c_str(), "wb+");
     if (!output){
         std::cout << std::endl << "Error opening " << filename << ". Exiting..." << std::endl;
@@ -30,5 +31,5 @@ void WriteFile(std::string filename, std::vector<T> &outputdata){
     }
     fwrite(outputdata.data(), outputdata.size(), sizeof(T), output);
     fclose(output);
-    std::cout << "Done!" << std::endl;
+    event.stop();
 }
