@@ -37,8 +37,11 @@ void Converter<T>::convertToBinary(){
     T result = 0;
     bool pushnumber = false;
     bool calculateDecimal = false;
+    char sign = 1;
     for (uint8_t digit : *inputdata){
-        if(AlphaNumeric::isNumeric(digit)){
+        if (digit == '-'){
+            sign = -1;
+        } else if(AlphaNumeric::isNumeric(digit)){
             result *= base;
             result += (T)(digit-'0');
             pushnumber = true;
@@ -51,9 +54,10 @@ void Converter<T>::convertToBinary(){
             result += (T)(digit-'A'+10);
             pushnumber = true;
         } else if (pushnumber){
-            outputdata.push_back(result);
+            outputdata.push_back(sign * result);
             result = 0;
             pushnumber = false;
+            sign = 1;
         }
     }
     if (pushnumber){
