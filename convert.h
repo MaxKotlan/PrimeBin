@@ -35,17 +35,18 @@ void Converter<T>::convertToBinary(){
     T result = 0;
     bool pushnumber = false;
     for (uint64_t i = 0; i < inputdata->size(); i++){
-        if((*inputdata)[i] >= '0' && (*inputdata)[i] <= '9' && (*inputdata)[i] - '0' < base){
+        uint8_t digit = *(inputdata->data()+i);
+        if(digit >= '0' && digit <= '9' && digit - '0' < base){
             result *= base;
-            result += (T)((*inputdata)[i]-'0');
+            result += (T)(digit-'0');
             pushnumber = true;
-        } else if ((*inputdata)[i] >= 'a' && (*inputdata)[i] <= 'z' && (*inputdata)[i] - 'a'+10 < base){
+        } else if (digit >= 'a' && digit <= 'z' && digit - 'a'+10 < base){
             result *= base;
-            result += (T)((*inputdata)[i]-'a'+10);
+            result += (T)(digit-'a'+10);
             pushnumber = true;
-        } else if ((*inputdata)[i] >= 'A' && (*inputdata)[i] <= 'Z' && (*inputdata)[i] - 'A'+10 < base){
+        } else if (digit >= 'A' && digit <= 'Z' && digit - 'A'+10 < base){
             result *= base;
-            result += (T)((*inputdata)[i]-'A'+10);
+            result += (T)(digit-'A'+10);
             pushnumber = true;
         } else if (pushnumber){
             outputdata.push_back(result);
