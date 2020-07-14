@@ -4,6 +4,13 @@
 #include <iomanip>
 #include "event.h"
 
+#ifdef _WIN32
+#include <winsock.h>
+#else
+#include <arpa/inet.h>
+#endif
+
+
 template <class T>
 class Previewer{
     public:
@@ -24,7 +31,7 @@ template <class T>
 void Previewer<T>::PrintTop(){
     std::cout << std::endl <<"Map Preview: " << std::endl;
     for (uint32_t i = 0; i < _outputdata->size() && i < bytepeeksize; i++){
-        std::cout << "\t" << std::hex << std::hexfloat << std::setfill('0') << std::setw(2) << i*sizeof(T) << " " << std::setw(sizeof(T)*2) << _outputdata->operator[](i) << " (" << std::dec << std::defaultfloat << _outputdata->operator[](i) << ")" << std::endl;
+        std::cout << "\t" << std::hex << std::hexfloat << std::setfill('0') << std::setw(2) << i*sizeof(T) << " " << std::setw(sizeof(T)*2) << htonl(_outputdata->operator[](i)) << " (" << std::dec << std::defaultfloat << _outputdata->operator[](i) << ")" << std::endl;
     }
     
 };

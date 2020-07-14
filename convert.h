@@ -2,7 +2,11 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#ifdef _WIN32
+#include <winsock.h>
+#else
 #include <arpa/inet.h>
+#endif
 #include "digit.h"
 #include "event.h"
 
