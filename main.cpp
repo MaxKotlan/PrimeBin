@@ -27,7 +27,7 @@ void help(std::string progname){
     std::cout << "\t-b, --base [2-36]\t         interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
     std::cout << "\t-u, --unsigned\t                 treat all numbers as unsigned even if a number sign is present. example: -2 would equal 0x2" << std::endl;
     std::cout << "\t-i, --ignore [string]\t         ignores delimiters or digits. example ignore ',': 1,2 = 12 or 0xC" << std::endl;
-    std::cout << "\t\texample: -d \"a1 ,*\"\t will ignore a 1 space ," << std::endl;
+    std::cout << "\t\texample: -i \"a1 ,*\"\t will ignore a 1 space ," << std::endl;
     std::cout << "\t-p, --primitive [type]\t         select primitive of output memory map. If number is too large standard overflow will occur." << std::endl;
     std::cout << "\t\tuint8\t(1 bytes)" << std::endl;
     std::cout << "\t\tuint16\t(2 bytes)" << std::endl;
