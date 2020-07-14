@@ -18,21 +18,24 @@ struct Startup{
     bool swapEndianess = false;
     uint32_t base = 10;
     Primitive writeprim = uint32;
+    std::string ignoreddelimiters = "";
 } startup;
 
 void help(std::string progname){
     std::cout << "Usage: " << progname << " [filename.txt]" << std::endl;
-    std::cout << "\t-h, --help\t           shows this prompt" << std::endl;
-    std::cout << "\t-b, --base [2-36]\t   interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
-    std::cout << "\t-u, --unsigned\t           treat all numbers as unsigned integers even if a number sign is present before the number." << std::endl;
-    std::cout << "\t-p, --primitive [type]\t   select primitive of output memory map. If number is too large standard overflow will occur." << std::endl;
+    std::cout << "\t-h, --help\t                         shows this prompt" << std::endl;
+    std::cout << "\t-b, --base [2-36]\t                 interprets digits in different base. Default 10. Digits outside range of base (for instance 9 in base 9, will be skipped)." << std::endl;
+    std::cout << "\t-u, --unsigned\t                         treat all numbers as unsigned even if a number sign is present. example: -2 would equal 0x2" << std::endl;
+    std::cout << "\t-d, --ignore-delimiters [string]\t ignores characters as delimiters. example ignore ',': 1,2 = 12 or 0xC" << std::endl;
+    std::cout << "\t\texample: -d \"abcdef ,;*\"\t will ignore a b c d e f space , ; *" << std::endl;
+    std::cout << "\t-p, --primitive [type]\t                 select primitive of output memory map. If number is too large standard overflow will occur." << std::endl;
     std::cout << "\t\tuint8\t(1 bytes)" << std::endl;
     std::cout << "\t\tuint16\t(2 bytes)" << std::endl;
     std::cout << "\t\tuint32\t(4 bytes)" << std::endl;
     std::cout << "\t\tuint64\t(8 bytes)" << std::endl;
     std::cout << "\t\tfloat32\t(4 bytes)" << std::endl;
     std::cout << "\t\tfloat64\t(8 bytes)" << std::endl;
-    std::cout << "\t-e, --swapendianess\t   saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
+    std::cout << "\t-e, --swapendianess\t                 saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
     exit(-1);
 }
 
@@ -54,8 +57,9 @@ std::string parseArgs(int argc, char** argv){
                 std::cout << "Base must be equal or between  2 and 36" << std::endl;
                 exit(-1);
             }
-        }
-        else if ((std::string(argv[i]) == "--primitive" || std::string(argv[i]) == "-p") && i < argc-1){
+        } else if (std::string(argv[i]) == "--ignore-delimiters" || std::string(argv[i]) == "-d" && i < argc-1){
+            startup.ignoreddelimiters = std::string(argv[i+1]);
+        } else if ((std::string(argv[i]) == "--primitive" || std::string(argv[i]) == "-p") && i < argc-1){
             if (std::string(argv[i+1]) == "uint8")  startup.writeprim = uint8;
             if (std::string(argv[i+1]) == "uint16") startup.writeprim = uint16;
             if (std::string(argv[i+1]) == "uint32") startup.writeprim = uint32;
@@ -73,6 +77,7 @@ template <class T>
 void TransformAndWrite(std::string filename, std::vector<uint8_t>* inputbuffer){
     Converter<T> conv(inputbuffer);
     conv.setIgnoreSigns(startup.ignoreSigns);
+    conv.setIgnoredDelimiters(startup.ignoreddelimiters);
     conv.setBase(startup.base);
     conv.convertToBinary();
     if (startup.swapEndianess)

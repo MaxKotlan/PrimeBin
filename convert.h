@@ -11,19 +11,21 @@ class Converter{
     public:
         Converter(std::vector<uint8_t>* buffer);
         void swapEndianess();
+        void setIgnoredDelimiters(std::string igdelm){ ignoreddelimiters = igdelm; }
         void setIgnoreSigns(bool ignigns) { ignoresigns = ignigns; };
         void setBase(uint32_t nbase) { base = nbase; };
         void convertToBinary();
         std::vector<T> outputdata;
 
     private:
+        std::string ignoreddelimiters;
         std::vector<uint8_t>* inputdata;
         uint32_t base;
         bool ignoresigns;
 };
 
 template <class T>
-Converter<T>::Converter(std::vector<uint8_t>* bufferaddress) : inputdata(bufferaddress) {};
+Converter<T>::Converter(std::vector<uint8_t>* bufferaddress) : inputdata(bufferaddress), ignoreddelimiters("") {};
 
 template <class T>
 void Converter<T>::swapEndianess() {
@@ -42,6 +44,11 @@ void Converter<T>::convertToBinary(){
     uint32_t decimalindex = base;
     char sign = 1;
     for (uint8_t digit : *inputdata){
+        bool ignore = false;
+        for (auto delimiter : ignoreddelimiters)
+            if (digit == delimiter) ignore = true;
+        if (ignore) continue;
+        
         if (digit == '-' && !ignoresigns){
             sign = -1;
         } else if (digit == '.'){
