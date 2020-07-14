@@ -55,7 +55,7 @@ void Converter<T>::convertToBinary(){
             sign = -1;
         } else if (digit == '.'){
             calculateDecimal = true;
-        } else if(AlphaNumeric::isNumeric(digit)){
+        } else if(AlphaNumeric::isNumeric(digit) && (digit - '0') < base){
             if (!calculateDecimal){
                 result *= base;
                 result += (T)(digit-'0');
