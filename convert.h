@@ -39,25 +39,45 @@ void Converter<T>::convertToBinary(){
     T result = 0;
     bool pushnumber = false;
     bool calculateDecimal = false;
+    uint32_t decimalindex = base;
     char sign = 1;
     for (uint8_t digit : *inputdata){
         if (digit == '-' && !ignoresigns){
             sign = -1;
+        } else if (digit == '.'){
+            calculateDecimal = true;
         } else if(AlphaNumeric::isNumeric(digit)){
-            result *= base;
-            result += (T)(digit-'0');
+            if (!calculateDecimal){
+                result *= base;
+                result += (T)(digit-'0');
+            } else {
+                result += ((T)(digit-'0') / ((T)decimalindex));
+                decimalindex*=base;
+            }
             pushnumber = true;
         } else if (AlphaNumeric::isLowerAlphabetic(digit) && digit - 'a'+10 < base){
-            result *= base;
-            result += (T)(digit-'a'+10);
+            if (!calculateDecimal){
+                result *= base;
+                result += (T)(digit-'a'+10);
+            } else {
+                result += ((T)(digit-'a'+10) / ((T)decimalindex));
+                decimalindex*=base;
+            }
             pushnumber = true;
         } else if (AlphaNumeric::isUpperAlphabetic(digit) && digit - 'A'+10 < base){
-            result *= base;
-            result += (T)(digit-'A'+10);
+            if (!calculateDecimal){
+                result *= base;
+                result += (T)(digit-'A'+10);
+            } else {
+                result += ((T)(digit-'A'+10) / ((T)decimalindex));
+                decimalindex*=base;
+            }
             pushnumber = true;
         } else if (pushnumber){
             outputdata.push_back(sign * result);
             result = 0;
+            calculateDecimal = false;
+            decimalindex = base;
             pushnumber = false;
             sign = 1;
         }
