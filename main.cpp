@@ -2,6 +2,7 @@
 #include <string>
 #include "analyze.h"
 #include "convert.h"
+#include "preview.h"
 #include "file.h"
 
 typedef enum Primitive{
@@ -9,6 +10,10 @@ typedef enum Primitive{
     uint16,
     uint32,
     uint64,
+    int8,
+    int16,
+    int32,
+    int64,
     float32,
     float64
 } Primitive;
@@ -33,6 +38,10 @@ void help(std::string progname){
     std::cout << "\t\tuint16\t(2 bytes)" << std::endl;
     std::cout << "\t\tuint32\t(4 bytes)" << std::endl;
     std::cout << "\t\tuint64\t(8 bytes)" << std::endl;
+    std::cout << "\t\tint8\t(1 bytes)" << std::endl;
+    std::cout << "\t\tint16\t(2 bytes)" << std::endl;
+    std::cout << "\t\tint32\t(4 bytes)" << std::endl;
+    std::cout << "\t\tint64\t(8 bytes)" << std::endl;
     std::cout << "\t\tfloat32\t(4 bytes)" << std::endl;
     std::cout << "\t\tfloat64\t(8 bytes)" << std::endl;
     std::cout << "\t-e, --swapendianess\t         saves file in opposite endianess of system. For instance if your system is x86 (little endian), results are saved as big endian." << std::endl;
@@ -60,10 +69,14 @@ std::string parseArgs(int argc, char** argv){
         } else if (std::string(argv[i]) == "--ignore" || std::string(argv[i]) == "-i" && i < argc-1){
             startup.ignore = std::string(argv[i+1]);
         } else if ((std::string(argv[i]) == "--primitive" || std::string(argv[i]) == "-p") && i < argc-1){
-            if (std::string(argv[i+1]) == "uint8")  startup.writeprim = uint8;
-            if (std::string(argv[i+1]) == "uint16") startup.writeprim = uint16;
-            if (std::string(argv[i+1]) == "uint32") startup.writeprim = uint32;
-            if (std::string(argv[i+1]) == "uint64") startup.writeprim = uint64;
+            if (std::string(argv[i+1]) == "uint8")   startup.writeprim = uint8;
+            if (std::string(argv[i+1]) == "uint16")  startup.writeprim = uint16;
+            if (std::string(argv[i+1]) == "uint32")  startup.writeprim = uint32;
+            if (std::string(argv[i+1]) == "uint64")  startup.writeprim = uint64;
+            if (std::string(argv[i+1]) == "int8")    startup.writeprim = int8;
+            if (std::string(argv[i+1]) == "int16")   startup.writeprim = int16;
+            if (std::string(argv[i+1]) == "int32")   startup.writeprim = int32;
+            if (std::string(argv[i+1]) == "int64")   startup.writeprim = int64;
             if (std::string(argv[i+1]) == "float32") startup.writeprim = float32;
             if (std::string(argv[i+1]) == "float64") startup.writeprim = float64;
         }
@@ -85,6 +98,8 @@ void TransformAndWrite(std::string filename, std::vector<uint8_t>* inputbuffer){
         
     std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
     WriteFile(outputfilename, conv.outputdata);
+    Previewer<T> preview(&conv.outputdata);
+    preview.PrintTop();
 }
 
 int main(int argc, char** argv){
@@ -102,6 +117,14 @@ int main(int argc, char** argv){
             TransformAndWrite<uint32_t>(filename, &inputbuffer); break;
         case uint64: 
             TransformAndWrite<uint64_t>(filename, &inputbuffer); break;
+        case int8: 
+            TransformAndWrite<int8_t>(filename, &inputbuffer); break;
+        case int16: 
+            TransformAndWrite<int16_t>(filename, &inputbuffer); break;
+        case int32: 
+            TransformAndWrite<int32_t>(filename, &inputbuffer); break;
+        case int64: 
+            TransformAndWrite<int64_t>(filename, &inputbuffer); break;
         case float32: 
             TransformAndWrite<float>(filename, &inputbuffer); break;
         case float64: 

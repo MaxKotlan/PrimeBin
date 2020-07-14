@@ -36,6 +36,7 @@ void Converter<T>::swapEndianess() {
 }
 
 template <class T>
+/*This is gross. Make sure to compile with optimization (-O3)*/
 void Converter<T>::convertToBinary(){
     Event event("Converting");
     T result = 0;
@@ -43,6 +44,7 @@ void Converter<T>::convertToBinary(){
     bool calculateDecimal = false;
     uint32_t decimalindex = base;
     char sign = 1;
+    outputdata.reserve(inputdata->size()/2);
     for (uint8_t digit : *inputdata){
         bool ignore = false;
         for (auto delimiter : ignoreddelimiters)
