@@ -3,6 +3,131 @@
 #include <iostream>
 #include <fstream>
 
+template <class T>
+class FileManager{
+    public:
+
+        FileManager(std::string infilename, uint64_t chunksize);
+        ~FileManager();
+        void OpenInputFile();
+        void OpenOutputFile();
+        std::string createOutputFilename();
+        void ReadChunk();
+        void WriteChunk();
+        bool ChunksRemain() {return (_chunkindex)*_chunksize < _filesize; };
+        std::vector<uint8_t>* getInputBufferRef() { return &_inputBuffer; }
+        std::vector<T>*       getOutputBufferRef() { return &_outputBuffer; }
+
+    private:
+        std::vector<uint8_t> _inputBuffer;
+        std::vector<T>       _outputBuffer;
+        std::string _infilename;
+        std::string _outfilename;
+        FILE*       _infile;
+        FILE*       _outfile;
+        uint64_t    _filesize;
+        uint64_t    _chunksize;
+        uint64_t    _chunkindex;
+};
+
+template <class T>
+FileManager<T>::FileManager(std::string infilename, uint64_t chunksize) : _chunksize(chunksize), _chunkindex(0), _infilename(infilename), _outfilename(createOutputFilename()), _inputBuffer(chunksize){
+     _outputBuffer.reserve(chunksize/sizeof(T));
+    OpenInputFile();
+    OpenOutputFile();
+}
+
+template <class T>
+FileManager<T>::~FileManager(){
+    fclose(_infile);
+    fclose(_outfile);
+}
+
+
+template <class T>
+std::string FileManager<T>::createOutputFilename(){
+    return _infilename.substr(0, _infilename.find('.')) + ".bin";
+}
+
+
+template <class T>
+void FileManager<T>::OpenInputFile(){
+    Event event("Opening " + _infilename);
+    _infile = fopen(_infilename.c_str(), "rb+");
+    if (!_infile){
+        std::cout << std::endl << "Error opening " << _infilename << ". Exiting..." << std::endl;
+        exit(-1);
+    }
+    fseek(_infile, 0L, SEEK_END);
+    _filesize = ftell(_infile);
+    fseek(_infile, 0L, SEEK_SET);
+    event.stop();
+}
+
+template <class T>
+void FileManager<T>::OpenOutputFile(){
+    Event event("Writing to " + _outfilename);
+    _outfile = fopen(_outfilename.c_str(), "wb+");
+    if (!_outfile){
+        std::cout << std::endl << "Error opening " << _outfilename << ". Exiting..." << std::endl;
+        exit(-1);
+    }
+    event.stop();
+}
+
+template <class T>
+void FileManager<T>::ReadChunk(){
+    Event event("Reading chunk " + std::to_string(_chunkindex));
+
+    fread(_inputBuffer.data(), _inputBuffer.size(), sizeof(uint8_t), _infile);
+
+    event.stop();
+}
+
+template <class T>
+void FileManager<T>::WriteChunk(){
+    Event event("Writing chunk " + std::to_string(_chunkindex));
+
+    fwrite(_outputBuffer.data(), _outputBuffer.size(), sizeof(T), _outfile);
+
+    _outputBuffer.clear();
+    _chunkindex++;
+    event.stop();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 std::vector<uint8_t> ReadFile(std::string filename){
     Event event("Reading " + filename + " Into Memory");
     //std::cout << "Reading " << filename << " Into Memory... " << std::flush; 

@@ -13,28 +13,28 @@
 template <class T>
 class Converter{
     public:
-        Converter(std::vector<uint8_t>* buffer);
+        Converter(std::vector<uint8_t>* inputBuffer, std::vector<T>* outputBuffer);
         void swapEndianess();
         void setIgnoredDelimiters(std::string igdelm){ ignoreddelimiters = igdelm; }
         void setIgnoreSigns(bool ignigns) { ignoresigns = ignigns; };
         void setBase(uint32_t nbase) { base = nbase; };
         void convertToBinary();
-        std::vector<T> outputdata;
 
     private:
         std::string ignoreddelimiters;
         std::vector<uint8_t>* inputdata;
+        std::vector<T>* outputdata;
         uint32_t base;
         bool ignoresigns;
 };
 
 template <class T>
-Converter<T>::Converter(std::vector<uint8_t>* bufferaddress) : inputdata(bufferaddress), ignoreddelimiters("") {};
+Converter<T>::Converter(std::vector<uint8_t>* inputBufferAddr, std::vector<T>* outputBufferAddr) : inputdata(inputBufferAddr), outputdata(outputBufferAddr), ignoreddelimiters("") {};
 
 template <class T>
 void Converter<T>::swapEndianess() {
     Event event("Swapping Endieness");
-    for (T &primenumber : outputdata)
+    for (T &primenumber : *outputdata)
         primenumber = htonl(primenumber);
     event.stop();
 }
@@ -48,7 +48,6 @@ void Converter<T>::convertToBinary(){
     bool calculateDecimal = false;
     uint32_t decimalindex = base;
     char sign = 1;
-    outputdata.reserve(inputdata->size()/2);
     for (uint8_t digit : *inputdata){
         bool ignore = false;
         for (auto delimiter : ignoreddelimiters)
@@ -87,7 +86,7 @@ void Converter<T>::convertToBinary(){
             }
             pushnumber = true;
         } else if (pushnumber){
-            outputdata.push_back(sign * result);
+            outputdata->push_back(sign * result);
             result = 0;
             calculateDecimal = false;
             decimalindex = base;
@@ -96,7 +95,7 @@ void Converter<T>::convertToBinary(){
         }
     }
     if (pushnumber){
-        outputdata.push_back(result);
+        outputdata->push_back(result);
         result = 0;
         pushnumber = false;
     }

@@ -87,48 +87,60 @@ std::string parseArgs(int argc, char** argv){
 }
 
 template <class T>
-void TransformAndWrite(std::string filename, std::vector<uint8_t>* inputbuffer){
-    Converter<T> conv(inputbuffer);
-    conv.setIgnoreSigns(startup.ignoreSigns);
-    conv.setIgnoredDelimiters(startup.ignore);
-    conv.setBase(startup.base);
-    conv.convertToBinary();
-    if (startup.swapEndianess)
-        conv.swapEndianess();
-        
-    std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
-    WriteFile(outputfilename, conv.outputdata);
-    Previewer<T> preview(&conv.outputdata);
-    preview.PrintTop();
+void TransformFile(std::string inputfile){
+
+    FileManager<T> fm(inputfile, 1024);
+    
+    while (fm.ChunksRemain()){
+
+        fm.ReadChunk();
+
+        Converter<T> conv(fm.getInputBufferRef(), fm.getOutputBufferRef());
+        conv.setIgnoreSigns(startup.ignoreSigns);
+        conv.setIgnoredDelimiters(startup.ignore);
+        conv.setBase(startup.base);
+        conv.convertToBinary();
+        if (startup.swapEndianess)
+            conv.swapEndianess();
+
+        fm.WriteChunk();
+
+    }
+
+    //std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
+    //WriteFile(outputfilename, conv.outputdata);
+    
+    //Previewer<T> preview(fm.getOutputBufferRef());
+    //preview.PrintTop();
 }
 
 int main(int argc, char** argv){
     std::string filename = parseArgs(argc, argv);
-    std::vector<uint8_t> inputbuffer = ReadFile(filename);
+    //std::vector<uint8_t> inputbuffer = ReadFile(filename);
     
     //Analyzer analyze(&inputbuffer);
 
     switch (startup.writeprim){
         case uint8: 
-            TransformAndWrite<uint8_t>(filename, &inputbuffer); break;
+            TransformFile<uint8_t>(filename); break;
         case uint16: 
-            TransformAndWrite<uint16_t>(filename, &inputbuffer); break;
+            TransformFile<uint16_t>(filename); break;
         case uint32: 
-            TransformAndWrite<uint32_t>(filename, &inputbuffer); break;
+            TransformFile<uint32_t>(filename); break;
         case uint64: 
-            TransformAndWrite<uint64_t>(filename, &inputbuffer); break;
+            TransformFile<uint64_t>(filename); break;
         case int8: 
-            TransformAndWrite<int8_t>(filename, &inputbuffer); break;
+            TransformFile<int8_t>(filename); break;
         case int16: 
-            TransformAndWrite<int16_t>(filename, &inputbuffer); break;
+            TransformFile<int16_t>(filename); break;
         case int32: 
-            TransformAndWrite<int32_t>(filename, &inputbuffer); break;
+            TransformFile<int32_t>(filename); break;
         case int64: 
-            TransformAndWrite<int64_t>(filename, &inputbuffer); break;
+            TransformFile<int64_t>(filename); break;
         case float32: 
-            TransformAndWrite<float>(filename, &inputbuffer); break;
+            TransformFile<float>(filename); break;
         case float64: 
-            TransformAndWrite<double>(filename, &inputbuffer); break;
+            TransformFile<double>(filename); break;
 
     }
 
