@@ -88,6 +88,7 @@ std::string parseArgs(int argc, char** argv){
 
 template <class T>
 void TransformFile(std::string inputfile){
+    Event event("Entire File Converted", true);
 
     FileManager<T> fm(inputfile, 1073741824);
     Converter<T> conv(&fm);
@@ -102,6 +103,8 @@ void TransformFile(std::string inputfile){
             conv.swapEndianess();
     } while (fm.ChunksRemain());
     fm.WriteChunk();
+
+    event.stop();
     //std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
     //WriteFile(outputfilename, conv.outputdata);
     
