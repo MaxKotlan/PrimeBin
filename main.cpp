@@ -90,7 +90,7 @@ template <class T>
 void TransformFile(std::string inputfile){
     Event event("Entire File Converted", true);
 
-    FileManager<T> fm(inputfile, 1073741824);
+    FileManager<T> fm(inputfile, 536870912);
     Converter<T> conv(&fm);
     conv.setIgnoreSigns(startup.ignoreSigns);
     conv.setIgnoredDelimiters(startup.ignore);

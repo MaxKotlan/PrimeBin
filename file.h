@@ -79,7 +79,7 @@ void FileManager<T>::OpenOutputFile(){
 
 template <class T>
 void FileManager<T>::ReadChunk(){
-    Event event("Reading chunk " + std::to_string(_readchunkindex)  + " (" + std::to_string(_outputBuffer.size()*sizeof(T)) + ") bytes: ");
+    Event event("Reading chunk " + std::to_string(_readchunkindex)  + " (" + std::to_string(_inputBuffer.size()) + ") bytes: ");
     
     if (_filesize - _chunksize*_readchunkindex < _chunksize)
         _inputBuffer.resize(_filesize - _chunksize*_readchunkindex);
@@ -93,7 +93,7 @@ void FileManager<T>::ReadChunk(){
 template <class T>
 void FileManager<T>::PushOutputData(T data){
     _outputBuffer.push_back(data);
-    if (_outputBuffer.size()*sizeof(T) >= _chunksize/sizeof(T))
+    if (_outputBuffer.size()*sizeof(T) >= _chunksize)
         WriteChunk();
 }
 
