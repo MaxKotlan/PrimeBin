@@ -13,8 +13,9 @@ class FileManager{
         void OpenOutputFile();
         std::string createOutputFilename();
         void ReadChunk();
-        void CheckAndWriteChunk();
-        bool ChunksRemain() {return (_readchunkindex)*_chunksize < _filesize; };
+        void WriteChunk();
+        bool ChunksRemain() {return (_readchunkindex)*_chunksize <= _filesize; };
+        void PushOutputData(T output);
         std::vector<uint8_t>* getInputBufferRef() { return &_inputBuffer; }
         std::vector<T>*       getOutputBufferRef() { return &_outputBuffer; }
 
@@ -79,6 +80,9 @@ void FileManager<T>::OpenOutputFile(){
 template <class T>
 void FileManager<T>::ReadChunk(){
     Event event("Reading chunk " + std::to_string(_readchunkindex));
+    
+    if (_filesize - _chunksize*_readchunkindex < _chunksize)
+        _inputBuffer.resize(_filesize - _chunksize*_readchunkindex);
 
     fread(_inputBuffer.data(), _inputBuffer.size(), sizeof(uint8_t), _infile);
 
@@ -87,16 +91,22 @@ void FileManager<T>::ReadChunk(){
 }
 
 template <class T>
-void FileManager<T>::CheckAndWriteChunk(){
-    if (_chunksize/sizeof(T) == _outputBuffer.size()){
-        Event event("Writing chunk " + std::to_string(_writechunkindex) + " Outputsize: " + std::to_string(_outputBuffer.size()));
+void FileManager<T>::PushOutputData(T data){
+    _outputBuffer.push_back(data);
+    if (_outputBuffer.size() >= _chunksize/sizeof(T))
+        WriteChunk();
+}
 
-        fwrite(_outputBuffer.data(), _outputBuffer.size(), sizeof(T), _outfile);
 
-        _outputBuffer.clear();
-        _writechunkindex++;
-        event.stop();
-    }
+template <class T>
+void FileManager<T>::WriteChunk(){
+    Event event("Writing chunk " + std::to_string(_writechunkindex) + " Outputsize: " + std::to_string(_outputBuffer.size()));
+
+    fwrite(_outputBuffer.data(), _outputBuffer.size(), sizeof(T), _outfile);
+
+    _outputBuffer.clear();
+    _writechunkindex++;
+    event.stop();
 }
 
 

@@ -89,24 +89,19 @@ std::string parseArgs(int argc, char** argv){
 template <class T>
 void TransformFile(std::string inputfile){
 
-    FileManager<T> fm(inputfile, 4);
-    
-    while (fm.ChunksRemain()){
+    FileManager<T> fm(inputfile, 3);
+    Converter<T> conv(&fm);
+    conv.setIgnoreSigns(startup.ignoreSigns);
+    conv.setIgnoredDelimiters(startup.ignore);
+    conv.setBase(startup.base);
 
+    do{
         fm.ReadChunk();
-
-        Converter<T> conv(fm.getInputBufferRef(), fm.getOutputBufferRef(), &fm);
-        conv.setIgnoreSigns(startup.ignoreSigns);
-        conv.setIgnoredDelimiters(startup.ignore);
-        conv.setBase(startup.base);
         conv.convertToBinary();
         if (startup.swapEndianess)
             conv.swapEndianess();
-
-        //fm.WriteChunk();
-
-    }
-
+    } while (fm.ChunksRemain());
+    fm.WriteChunk();
     //std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
     //WriteFile(outputfilename, conv.outputdata);
     
