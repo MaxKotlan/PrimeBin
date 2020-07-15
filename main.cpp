@@ -89,13 +89,13 @@ std::string parseArgs(int argc, char** argv){
 template <class T>
 void TransformFile(std::string inputfile){
 
-    FileManager<T> fm(inputfile, 1024);
+    FileManager<T> fm(inputfile, 4);
     
     while (fm.ChunksRemain()){
 
         fm.ReadChunk();
 
-        Converter<T> conv(fm.getInputBufferRef(), fm.getOutputBufferRef());
+        Converter<T> conv(fm.getInputBufferRef(), fm.getOutputBufferRef(), &fm);
         conv.setIgnoreSigns(startup.ignoreSigns);
         conv.setIgnoredDelimiters(startup.ignore);
         conv.setBase(startup.base);
@@ -103,7 +103,7 @@ void TransformFile(std::string inputfile){
         if (startup.swapEndianess)
             conv.swapEndianess();
 
-        fm.WriteChunk();
+        //fm.WriteChunk();
 
     }
 

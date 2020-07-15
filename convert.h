@@ -9,11 +9,12 @@
 #endif
 #include "digit.h"
 #include "event.h"
+#include "file.h"
 
 template <class T>
 class Converter{
     public:
-        Converter(std::vector<uint8_t>* inputBuffer, std::vector<T>* outputBuffer);
+        Converter(std::vector<uint8_t>* inputBuffer, std::vector<T>* outputBuffer, FileManager<T>* fm);
         void swapEndianess();
         void setIgnoredDelimiters(std::string igdelm){ ignoreddelimiters = igdelm; }
         void setIgnoreSigns(bool ignigns) { ignoresigns = ignigns; };
@@ -24,12 +25,13 @@ class Converter{
         std::string ignoreddelimiters;
         std::vector<uint8_t>* inputdata;
         std::vector<T>* outputdata;
+        FileManager<T>* _fm;
         uint32_t base;
         bool ignoresigns;
 };
 
 template <class T>
-Converter<T>::Converter(std::vector<uint8_t>* inputBufferAddr, std::vector<T>* outputBufferAddr) : inputdata(inputBufferAddr), outputdata(outputBufferAddr), ignoreddelimiters("") {};
+Converter<T>::Converter(std::vector<uint8_t>* inputBufferAddr, std::vector<T>* outputBufferAddr, FileManager<T>* fm) : inputdata(inputBufferAddr), outputdata(outputBufferAddr), ignoreddelimiters(""), _fm(fm) {};
 
 template <class T>
 void Converter<T>::swapEndianess() {
@@ -87,6 +89,7 @@ void Converter<T>::convertToBinary(){
             pushnumber = true;
         } else if (pushnumber){
             outputdata->push_back(sign * result);
+            _fm->CheckAndWriteChunk();
             result = 0;
             calculateDecimal = false;
             decimalindex = base;
@@ -96,6 +99,7 @@ void Converter<T>::convertToBinary(){
     }
     if (pushnumber){
         outputdata->push_back(result);
+        _fm->CheckAndWriteChunk();
         result = 0;
         pushnumber = false;
     }

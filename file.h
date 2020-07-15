@@ -13,8 +13,8 @@ class FileManager{
         void OpenOutputFile();
         std::string createOutputFilename();
         void ReadChunk();
-        void WriteChunk();
-        bool ChunksRemain() {return (_chunkindex)*_chunksize < _filesize; };
+        void CheckAndWriteChunk();
+        bool ChunksRemain() {return (_readchunkindex)*_chunksize < _filesize; };
         std::vector<uint8_t>* getInputBufferRef() { return &_inputBuffer; }
         std::vector<T>*       getOutputBufferRef() { return &_outputBuffer; }
 
@@ -27,11 +27,12 @@ class FileManager{
         FILE*       _outfile;
         uint64_t    _filesize;
         uint64_t    _chunksize;
-        uint64_t    _chunkindex;
+        uint64_t    _readchunkindex;
+        uint64_t    _writechunkindex;
 };
 
 template <class T>
-FileManager<T>::FileManager(std::string infilename, uint64_t chunksize) : _chunksize(chunksize), _chunkindex(0), _infilename(infilename), _outfilename(createOutputFilename()), _inputBuffer(chunksize){
+FileManager<T>::FileManager(std::string infilename, uint64_t chunksize) : _chunksize(chunksize), _readchunkindex(0),  _writechunkindex(0), _infilename(infilename), _outfilename(createOutputFilename()), _inputBuffer(chunksize){
      _outputBuffer.reserve(chunksize/sizeof(T));
     OpenInputFile();
     OpenOutputFile();
@@ -77,22 +78,25 @@ void FileManager<T>::OpenOutputFile(){
 
 template <class T>
 void FileManager<T>::ReadChunk(){
-    Event event("Reading chunk " + std::to_string(_chunkindex));
+    Event event("Reading chunk " + std::to_string(_readchunkindex));
 
     fread(_inputBuffer.data(), _inputBuffer.size(), sizeof(uint8_t), _infile);
 
+    _readchunkindex++;
     event.stop();
 }
 
 template <class T>
-void FileManager<T>::WriteChunk(){
-    Event event("Writing chunk " + std::to_string(_chunkindex));
+void FileManager<T>::CheckAndWriteChunk(){
+    if (_chunksize/sizeof(T) == _outputBuffer.size()){
+        Event event("Writing chunk " + std::to_string(_writechunkindex) + " Outputsize: " + std::to_string(_outputBuffer.size()));
 
-    fwrite(_outputBuffer.data(), _outputBuffer.size(), sizeof(T), _outfile);
+        fwrite(_outputBuffer.data(), _outputBuffer.size(), sizeof(T), _outfile);
 
-    _outputBuffer.clear();
-    _chunkindex++;
-    event.stop();
+        _outputBuffer.clear();
+        _writechunkindex++;
+        event.stop();
+    }
 }
 
 
