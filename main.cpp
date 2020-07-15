@@ -89,7 +89,7 @@ std::string parseArgs(int argc, char** argv){
 template <class T>
 void TransformFile(std::string inputfile){
 
-    FileManager<T> fm(inputfile, 3);
+    FileManager<T> fm(inputfile, 1073741824);
     Converter<T> conv(&fm);
     conv.setIgnoreSigns(startup.ignoreSigns);
     conv.setIgnoredDelimiters(startup.ignore);
