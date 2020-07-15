@@ -56,7 +56,7 @@ void Converter<T>::swapEndianess() {
 template <class T>
 /*This is gross. Make sure to compile with optimization (-O3)*/
 void Converter<T>::convertToBinary(){
-    Event event("Converting");
+    Event event("Converting", true);
 
     for (uint8_t digit : *_fm->getInputBufferRef()){
         bool ignore = false;

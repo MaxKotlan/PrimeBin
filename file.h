@@ -68,7 +68,7 @@ void FileManager<T>::OpenInputFile(){
 
 template <class T>
 void FileManager<T>::OpenOutputFile(){
-    Event event("Writing to " + _outfilename);
+    Event event("Opening " + _outfilename);
     _outfile = fopen(_outfilename.c_str(), "wb+");
     if (!_outfile){
         std::cout << std::endl << "Error opening " << _outfilename << ". Exiting..." << std::endl;
@@ -79,7 +79,7 @@ void FileManager<T>::OpenOutputFile(){
 
 template <class T>
 void FileManager<T>::ReadChunk(){
-    Event event("Reading chunk " + std::to_string(_readchunkindex));
+    Event event("Reading chunk " + std::to_string(_readchunkindex)  + " (" + std::to_string(_outputBuffer.size()*sizeof(T)) + ") bytes: ");
     
     if (_filesize - _chunksize*_readchunkindex < _chunksize)
         _inputBuffer.resize(_filesize - _chunksize*_readchunkindex);
@@ -100,7 +100,7 @@ void FileManager<T>::PushOutputData(T data){
 
 template <class T>
 void FileManager<T>::WriteChunk(){
-    Event event("Writing chunk " + std::to_string(_writechunkindex) + ": (" + std::to_string(_outputBuffer.size()*sizeof(T)) + ") bytes");
+    Event event("Writing chunk " + std::to_string(_writechunkindex) + " (" + std::to_string(_outputBuffer.size()*sizeof(T)) + ") bytes: ");
 
     fwrite(_outputBuffer.data(), _outputBuffer.size(), sizeof(T), _outfile);
 
