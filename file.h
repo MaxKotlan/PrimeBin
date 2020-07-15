@@ -9,6 +9,10 @@ class FileManager{
 
         FileManager(std::string infilename, uint64_t chunksize);
         ~FileManager();
+        void Open();
+        void Close();
+        void CloseInputFile();
+        void CloseOutputFile();
         void OpenInputFile();
         void OpenOutputFile();
         std::string createOutputFilename();
@@ -35,14 +39,45 @@ class FileManager{
 template <class T>
 FileManager<T>::FileManager(std::string infilename, uint64_t chunksize) : _chunksize(chunksize), _readchunkindex(0),  _writechunkindex(0), _infilename(infilename), _outfilename(createOutputFilename()), _inputBuffer(chunksize){
      _outputBuffer.reserve(chunksize/sizeof(T));
+    Open();
+}
+
+template <class T>
+void FileManager<T>::Open(){
     OpenInputFile();
     OpenOutputFile();
 }
 
 template <class T>
+void FileManager<T>::Close(){
+    CloseInputFile();
+    CloseOutputFile();
+}
+
+template <class T>
+void FileManager<T>::CloseInputFile(){
+    if (_infile){
+        Event event("Closing " + _infilename);
+        fclose(_infile);
+        _infile = nullptr;
+        event.stop();
+    }
+}
+
+template <class T>
+void FileManager<T>::CloseOutputFile(){
+    if (_outfile){
+        Event event("Closing " + _outfilename);
+        fclose(_outfile);
+        _outfile = nullptr;
+        event.stop();
+    }
+}
+
+
+template <class T>
 FileManager<T>::~FileManager(){
-    fclose(_infile);
-    fclose(_outfile);
+    Close();
 }
 
 

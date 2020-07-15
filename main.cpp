@@ -103,7 +103,7 @@ void TransformFile(std::string inputfile){
             conv.swapEndianess();
     } while (fm.ChunksRemain());
     fm.WriteChunk();
-
+    fm.Close();
     event.stop();
     //std::string outputfilename = filename.substr(0, filename.find('.')) + ".bin";
     //WriteFile(outputfilename, conv.outputdata);
