@@ -46,6 +46,4 @@ This will result in
     (1)         (2)         (3)         (4)        (56)        (10)        (11)
 
   ## Memory Usage
- Memory is cheap and I wrote this program for my personal needs. My personal needs required performance, over minimum memory usage, so the entire input file is read into memory with sequential reads.  If you're parsing a text file 2 gb in size, then you need at most 4gb of memory (usually less). If you want lower memory usage, request it. 
-
-Sorry ¯\\_(ツ)_/¯
+The --memory parameter allows the user to select the amount of ram that can be used. The fewer the system calls, the faster the program will run. 

@@ -9,32 +9,46 @@
 #endif
 #include "digit.h"
 #include "event.h"
+#include "file.h"
 
 template <class T>
 class Converter{
     public:
-        Converter(std::vector<uint8_t>* buffer);
+        Converter(FileManager<T>* fm);
         void swapEndianess();
         void setIgnoredDelimiters(std::string igdelm){ ignoreddelimiters = igdelm; }
         void setIgnoreSigns(bool ignigns) { ignoresigns = ignigns; };
-        void setBase(uint32_t nbase) { base = nbase; };
+        void setBase(uint32_t nbase) { base = nbase; decimalindex = base; };
         void convertToBinary();
-        std::vector<T> outputdata;
 
     private:
         std::string ignoreddelimiters;
-        std::vector<uint8_t>* inputdata;
-        uint32_t base;
+        FileManager<T>* _fm;
+        uint32_t base = 10;
         bool ignoresigns;
+
+        /*Conversion*/
+        T result = 0;
+        bool pushnumber = false;
+        bool calculateDecimal = false;
+        uint32_t decimalindex = base;
+        int8_t sign = 1;
 };
 
 template <class T>
-Converter<T>::Converter(std::vector<uint8_t>* bufferaddress) : inputdata(bufferaddress), ignoreddelimiters("") {};
+Converter<T>::Converter(FileManager<T>* fm) : ignoreddelimiters(""), _fm(fm) {
+    base = 10;
+    result = 0;
+    pushnumber = false;
+    calculateDecimal = false;
+    decimalindex = base;
+    sign = 1;
+};
 
 template <class T>
 void Converter<T>::swapEndianess() {
     Event event("Swapping Endieness");
-    for (T &primenumber : outputdata)
+    for (T &primenumber : *_fm->getOutputBufferRef())
         primenumber = htonl(primenumber);
     event.stop();
 }
@@ -42,14 +56,9 @@ void Converter<T>::swapEndianess() {
 template <class T>
 /*This is gross. Make sure to compile with optimization (-O3)*/
 void Converter<T>::convertToBinary(){
-    Event event("Converting");
-    T result = 0;
-    bool pushnumber = false;
-    bool calculateDecimal = false;
-    uint32_t decimalindex = base;
-    char sign = 1;
-    outputdata.reserve(inputdata->size()/2);
-    for (uint8_t digit : *inputdata){
+    Event event("Converting", true);
+
+    for (uint8_t digit : *_fm->getInputBufferRef()){
         bool ignore = false;
         for (auto delimiter : ignoreddelimiters)
             if (digit == delimiter) ignore = true;
@@ -87,7 +96,8 @@ void Converter<T>::convertToBinary(){
             }
             pushnumber = true;
         } else if (pushnumber){
-            outputdata.push_back(sign * result);
+            //outputdata->push_back(sign * result);
+            _fm->PushOutputData(sign * result);
             result = 0;
             calculateDecimal = false;
             decimalindex = base;
@@ -95,8 +105,8 @@ void Converter<T>::convertToBinary(){
             sign = 1;
         }
     }
-    if (pushnumber){
-        outputdata.push_back(result);
+    if (pushnumber && !_fm->ChunksRemain()){
+        _fm->PushOutputData(sign * result);
         result = 0;
         pushnumber = false;
     }
