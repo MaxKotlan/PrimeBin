@@ -37,8 +37,7 @@ class FileManager{
 };
 
 template <class T>
-FileManager<T>::FileManager(std::string infilename, uint64_t chunksize) : _chunksize(chunksize), _readchunkindex(0),  _writechunkindex(0), _infilename(infilename), _outfilename(createOutputFilename()), _inputBuffer(chunksize){
-     _outputBuffer.reserve(chunksize/sizeof(T));
+FileManager<T>::FileManager(std::string infilename, uint64_t chunksize) : _chunksize(chunksize), _readchunkindex(0),  _writechunkindex(0), _infilename(infilename), _outfilename(createOutputFilename()){
     Open();
 }
 
@@ -98,6 +97,11 @@ void FileManager<T>::OpenInputFile(){
     fseek(_infile, 0L, SEEK_END);
     _filesize = ftell(_infile);
     fseek(_infile, 0L, SEEK_SET);
+
+    if (_filesize < _chunksize)
+        _chunksize = _filesize;
+
+    _inputBuffer.resize(_chunksize);
     event.stop();
 }
 
@@ -109,6 +113,8 @@ void FileManager<T>::OpenOutputFile(){
         std::cout << std::endl << "Error opening " << _outfilename << ". Exiting..." << std::endl;
         exit(-1);
     }
+
+    _outputBuffer.reserve(_chunksize/sizeof(T));
     event.stop();
 }
 

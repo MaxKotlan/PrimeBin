@@ -22,6 +22,7 @@ struct Startup{
     bool ignoreSigns   = false;
     bool swapEndianess = false;
     uint32_t base = 10;
+    uint64_t maxmemory = 1024;
     Primitive writeprim = uint32;
     std::string ignore = "";
 } startup;
@@ -66,7 +67,11 @@ std::string parseArgs(int argc, char** argv){
                 std::cout << "Base must be equal or between  2 and 36" << std::endl;
                 exit(-1);
             }
-        } else if (std::string(argv[i]) == "--ignore" || std::string(argv[i]) == "-i" && i < argc-1){
+        }else if ((std::string(argv[i]) == "--memory" || std::string(argv[i]) == "-m") && i < argc-1){
+            std::string memstring = std::string(argv[i+1]);
+            std::cout << memstring << std::endl;
+            startup.maxmemory = std::stoi(std::string(argv[i+1]));
+        }else if ((std::string(argv[i]) == "--ignore" || std::string(argv[i]) == "-i") && i < argc-1){
             startup.ignore = std::string(argv[i+1]);
         } else if ((std::string(argv[i]) == "--primitive" || std::string(argv[i]) == "-p") && i < argc-1){
             if (std::string(argv[i+1]) == "uint8")   startup.writeprim = uint8;
